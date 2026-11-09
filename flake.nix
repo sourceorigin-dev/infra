@@ -4,7 +4,7 @@
     inputs = {
         nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-25.11";
         piqueld = {
-            url = "github:piquel-fr/piqueld";
+            url = "github:sourceorigin-dev/piqueld";
             inputs.nixpkgs.follows = "nixpkgs";
         };
         nixos-raspberrypi = {

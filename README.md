@@ -4,7 +4,7 @@ Infrastructure Setup &amp; Configuration
 
 ## Setup machine
 
--  ```nix-shell -p git --run "git clone https://github.com/piquel-fr/infra ~"```
+-  ```nix-shell -p git --run "git clone https://github.com/sourceorigin-dev/infra ~"```
 -  ```sh infra/setup.sh```
 
 Remote update:
