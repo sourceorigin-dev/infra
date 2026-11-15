@@ -15,6 +15,8 @@ let
 in
 {
   "tailscale_auth.age".publicKeys = users ++ systems;
+  # `cloudflared tunnel create piqueld` credentials JSON.
+  "piqueld-cloudflared-tunnel.age".publicKeys = users ++ [ ovh-1 ];
   # Cloudflare API token with Zone:Read and DNS:Edit.
   "piqueld-cloudflare-dns-token.age".publicKeys = users ++ [ ovh-1 ];
 }
