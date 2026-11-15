@@ -64,7 +64,9 @@ in
 
       # Containers reach the tailnet as ovh-1 itself, which includes nixosbtw's
       # build machine: it takes no credentials. Only the host may open
-      # connections there; replies to tailnet clients still go out.
+      # connections there; replies to tailnet clients still go out. This also
+      # keeps applications from calling private routes or the API at
+      # dash.piqueld.dev, which are on the tailnet.
       networking.firewall.extraCommands = ''
         iptables -t mangle -N no-tailnet 2>/dev/null || iptables -t mangle -F no-tailnet
         iptables -t mangle -C PREROUTING -j no-tailnet 2>/dev/null || iptables -t mangle -A PREROUTING -j no-tailnet
