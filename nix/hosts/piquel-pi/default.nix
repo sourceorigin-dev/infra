@@ -30,6 +30,8 @@ in
 
         networking = {
           networkmanager.enable = true;
+          # SSH from home, for when the tailnet is down.
+          firewall.interfaces.end0.allowedTCPPorts = config.services.openssh.ports;
           nameservers = [
             "1.1.1.1"
             "1.0.0.1"

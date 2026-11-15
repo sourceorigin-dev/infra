@@ -20,6 +20,11 @@
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    piqueld.url = "github:sourceorigin-dev/piqueld";
   };
 
   nixConfig = {
@@ -49,6 +54,7 @@
             packages = [
               # nixpkgs' build, cached and the same `activate` the hosts run.
               pkgs.deploy-rs
+              pkgs.nixos-anywhere
               inputs'.agenix.packages.default
             ];
           };

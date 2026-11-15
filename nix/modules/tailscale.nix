@@ -18,10 +18,6 @@
         # Tailscale routes through its own policy routing table, which strict
         # reverse-path filtering can misjudge, dropping tailnet traffic.
         checkReversePath = "loose";
-
-        # Trust the tailscale0 interface so intra-mesh traffic is unrestricted.
-        # All machines on the tailnet can freely reach each other.
-        trustedInterfaces = [ "tailscale0" ];
       };
 
       # Ensure tailscaled starts after the network is up.

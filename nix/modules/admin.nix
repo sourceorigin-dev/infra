@@ -10,28 +10,34 @@ in
     description = "The operator's user name on every host.";
   };
 
-  config.flake.nixosModules.admin = {
-    users.users.${user} = {
-      isNormalUser = true;
-      extraGroups = [ "wheel" ];
-      openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHVqRluVYJXXoNYyFQzkZm2v2bRnAv/PNuoLRr2G2/Dv piquel@piquel.fr"
-      ];
-    };
-
-    # deploy-rs activates through sudo without a terminal, so the operator's SSH
-    # key is the root credential.
-    security.sudo.wheelNeedsPassword = false;
-    # deploy-rs copies closures to the host as this user.
-    nix.settings.trusted-users = [ user ];
-
-    services.openssh = {
-      enable = true;
-      settings = {
-        PasswordAuthentication = false;
-        KbdInteractiveAuthentication = false;
-        PermitRootLogin = "no";
+  config.flake.nixosModules.admin =
+    { config, ... }:
+    {
+      users.users.${user} = {
+        isNormalUser = true;
+        extraGroups = [ "wheel" ];
+        openssh.authorizedKeys.keys = [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHVqRluVYJXXoNYyFQzkZm2v2bRnAv/PNuoLRr2G2/Dv piquel@piquel.fr"
+        ];
       };
+
+      # deploy-rs activates through sudo without a terminal, so the operator's SSH
+      # key is the root credential.
+      security.sudo.wheelNeedsPassword = false;
+      # deploy-rs copies closures to the host as this user.
+      nix.settings.trusted-users = [ user ];
+
+      services.openssh = {
+        enable = true;
+        # SSH is never public: it's open on the tailnet only, plus wherever a
+        # host opens it itself, such as the Pi's LAN.
+        openFirewall = false;
+        settings = {
+          PasswordAuthentication = false;
+          KbdInteractiveAuthentication = false;
+          PermitRootLogin = "no";
+        };
+      };
+      networking.firewall.interfaces.tailscale0.allowedTCPPorts = config.services.openssh.ports;
     };
-  };
 }
