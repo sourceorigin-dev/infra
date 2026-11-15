@@ -30,8 +30,12 @@ in
 
         networking = {
           networkmanager.enable = true;
-          # SSH from home, for when the tailnet is down.
-          firewall.interfaces.end0.allowedTCPPorts = config.services.openssh.ports;
+          # SSH from the home network over IPv4, for when the tailnet is down.
+          # Only from the LAN's own addresses, so nothing forwarded from the
+          # internet reaches it.
+          firewall.extraCommands = ''
+            iptables -I nixos-fw -i end0 -s 192.168.1.0/24 -p tcp --dport 22 -j nixos-fw-accept
+          '';
           nameservers = [
             "1.1.1.1"
             "1.0.0.1"

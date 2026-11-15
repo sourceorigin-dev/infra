@@ -12,6 +12,16 @@
 
         # Allow Tailscale's UDP port for NAT traversal / direct connections.
         openFirewall = true;
+        extraSetFlags = [
+          # By default Tailscale's own firewall rules accept everything from
+          # the tailnet ahead of NixOS's. This keeps its rules out of the way,
+          # so the tailnet only reaches the ports a host opens on `tailscale0`.
+          "--netfilter-mode=nodivert"
+          # Settings a node carries over from an earlier install: tailnet names
+          # resolve, and SSH stays OpenSSH's.
+          "--accept-dns=true"
+          "--ssh=false"
+        ];
       };
 
       networking.firewall = {

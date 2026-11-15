@@ -21,26 +21,23 @@ in
         enable = true;
         settings = {
           auth.max_token_days = 365;
-          # The daemon's own tailnet node. It and the private ingress node log
-          # their login URLs on first start.
-          tailscale = {
-            enabled = true;
-            hostname = "piqueld";
-          };
           reconciliation.prepare_timeout_seconds = 1200;
           # nixosbtw builds the images and keeps them in its registry
-          # (PiquelChips/dotfiles' build-machine module). While it's off,
-          # deployments that need a build fail and are deployed again later.
+          # (PiquelChips/dotfiles' build-machine module). While it's off, a
+          # deployment that needs a build fails with builder_unavailable and
+          # isn't retried: deploy again once it's on.
           build = {
             builder = "tcp://nixosbtw.tailfcb6ab.ts.net:1234";
             repository = "nixosbtw.tailfcb6ab.ts.net:5000/piqueld";
           };
-          # At 512 MB each by default, 8 previews leave half the VPS's memory to
-          # everything else.
+          # Previews run alongside production on a VPS with 8 GB. Each preview
+          # service gets 512 MB unless it sets its own limit.
           previews.max_total = 8;
           ingress = {
             enabled = true;
             acme.email = "admin@piquel.fr";
+            # The dashboard and API are served at dash.piqueld.dev through the
+            # private ingress node, which logs its login URL on first start.
             private = {
               enabled = true;
               dashboard_hostname = "dash.piqueld.dev";
@@ -64,5 +61,15 @@ in
       };
 
       users.users.${admin}.extraGroups = [ "piqueld" ];
+
+      # Containers reach the tailnet as ovh-1 itself, which includes nixosbtw's
+      # build machine: it takes no credentials. Only the host may open
+      # connections there; replies to tailnet clients still go out.
+      networking.firewall.extraCommands = ''
+        iptables -t mangle -N no-tailnet 2>/dev/null || iptables -t mangle -F no-tailnet
+        iptables -t mangle -C PREROUTING -j no-tailnet 2>/dev/null || iptables -t mangle -A PREROUTING -j no-tailnet
+        iptables -t mangle -A no-tailnet -i docker+ -d 100.64.0.0/10 -m conntrack --ctstate NEW -j DROP
+        iptables -t mangle -A no-tailnet -i br-+ -d 100.64.0.0/10 -m conntrack --ctstate NEW -j DROP
+      '';
     };
 }
