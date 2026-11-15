@@ -2,6 +2,18 @@
 {
   flake.nixosModules.tailscale =
     { config, ... }:
+    let
+      flags = [
+        # By default Tailscale's own firewall rules accept everything from
+        # the tailnet ahead of NixOS's. This keeps its rules out of the way,
+        # so the tailnet only reaches the ports a host opens on `tailscale0`.
+        "--netfilter-mode=nodivert"
+        # Settings a node carries over from an earlier install: tailnet names
+        # resolve, and SSH stays OpenSSH's.
+        "--accept-dns=true"
+        "--ssh=false"
+      ];
+    in
     {
       services.tailscale = {
         enable = true;
@@ -12,16 +24,17 @@
 
         # Allow Tailscale's UDP port for NAT traversal / direct connections.
         openFirewall = true;
+        # Applied on every boot, and when logging in again: `tailscale up`
+        # refuses to log in unless it repeats every non-default setting, and
+        # `--reset` clears any others carried over from an earlier install.
+        extraSetFlags = flags;
+        extraUpFlags = flags ++ [ "--reset" ];
       };
 
       networking.firewall = {
         # Tailscale routes through its own policy routing table, which strict
         # reverse-path filtering can misjudge, dropping tailnet traffic.
         checkReversePath = "loose";
-
-        # Trust the tailscale0 interface so intra-mesh traffic is unrestricted.
-        # All machines on the tailnet can freely reach each other.
-        trustedInterfaces = [ "tailscale0" ];
       };
 
       # Ensure tailscaled starts after the network is up.

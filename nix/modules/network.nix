@@ -4,8 +4,8 @@
   flake.nixosModules.network =
     { ... }:
     {
-      # Traffic from tailnet peers is trusted by the tailscale module. Publicly,
-      # only SSH (openssh's default) and Tailscale's UDP port are open.
+      # Publicly, only Tailscale's UDP port is open. SSH is open on the tailnet
+      # (the admin module); hosts open what they serve.
       networking.firewall.enable = true;
 
       # --- Network hardening ------------------------------------------------ #
