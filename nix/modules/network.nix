@@ -5,7 +5,7 @@
     { ... }:
     {
       # Traffic from tailnet peers is trusted by the tailscale module. Publicly,
-      # only SSH is open (openssh's default) until it moves to wg-infra (#3).
+      # only SSH (openssh's default) and Tailscale's UDP port are open.
       networking.firewall.enable = true;
 
       # --- Network hardening ------------------------------------------------ #

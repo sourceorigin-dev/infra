@@ -1,5 +1,5 @@
 {
-  description = "piquel-fr infrastructure";
+  description = "NixOS configuration for the operator's machines";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-26.05";
@@ -8,6 +8,8 @@
 
     nixos-raspberrypi = {
       url = "github:nvmd/nixos-raspberrypi/main";
+      # Its own nixpkgs is the one its binary cache has Pi kernels for.
+      # Following ours would build them from source, under emulation.
       #inputs.nixpkgs.follows = "nixpkgs";
     };
     deploy-rs = {
