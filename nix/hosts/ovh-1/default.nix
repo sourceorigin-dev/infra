@@ -2,7 +2,7 @@
 # nixos-anywhere; see the README.
 { inputs, ... }:
 {
-  hosts.piquel-fr = {
+  hosts.ovh-1 = {
     system = "x86_64-linux";
     address = "100.88.40.104";
     module =

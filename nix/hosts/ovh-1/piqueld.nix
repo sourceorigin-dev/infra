@@ -1,11 +1,11 @@
-# piqueld on piquel-fr. Public routes are served on its own addresses, private
+# piqueld on ovh-1. Public routes are served on its own addresses, private
 # routes and the dashboard through its tailnet nodes.
 { config, inputs, ... }:
 let
   admin = config.admin;
 in
 {
-  hosts.piquel-fr.module =
+  hosts.ovh-1.module =
     { config, ... }:
     {
       imports = [ inputs.piqueld.nixosModules.default ];
@@ -23,6 +23,13 @@ in
             hostname = "piqueld";
           };
           reconciliation.prepare_timeout_seconds = 1200;
+          # nixosbtw builds the images and keeps them in its registry
+          # (PiquelChips/dotfiles' build-machine module). While it's off,
+          # deployments that need a build fail and are deployed again later.
+          build = {
+            builder = "tcp://nixosbtw.tailfcb6ab.ts.net:1234";
+            repository = "nixosbtw.tailfcb6ab.ts.net:5000/piqueld";
+          };
           # At 512 MB each by default, 8 previews leave half the VPS's memory to
           # everything else.
           previews.max_total = 8;

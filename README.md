@@ -63,7 +63,7 @@ boot:
 ## Rescue
 
 - **piquel-pi:** SSH over the LAN; from away, through nixosbtw's screen on the KVM.
-- **piquel-fr:** open its KVM console in the OVH control panel and pick an
+- **ovh-1:** open its KVM console in the OVH control panel and pick an
   older generation in the GRUB menu at boot. If it can't boot at all, boot OVH's
   rescue mode, mount its disk on `/mnt` and enter it with
   `/mnt/nix/var/nix/profiles/system/sw/bin/nixos-enter --root /mnt`.
