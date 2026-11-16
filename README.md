@@ -44,9 +44,10 @@ only:
   `piquel-pi.tailfcb6ab.ts.net:5000`. nixosbtw builds them and pushes them there.
 - **Nix:** a binary cache at `https://piquel-pi.tailfcb6ab.ts.net`, with the key
   `piquel-pi-1:bKIz75gwV7RfJ6uT1YI+fUYbGk1uptOl9Vlu/jR+r0w=`. nixosbtw pushes
-  every path it builds, and every host here substitutes from it. Another
-  machine can use it by adding both to its `extra-substituters` and
-  `extra-trusted-public-keys`.
+  every path it builds, and every host here substitutes from it, so each can
+  read anything nixosbtw has built. Another machine can use it by adding both
+  to its `extra-substituters` and `extra-trusted-public-keys`, once the
+  tailnet's access rules let it reach the Pi on port 443.
 
 The Pi builds neither: it would have to emulate x86_64.
 
