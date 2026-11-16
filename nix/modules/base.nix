@@ -1,7 +1,7 @@
 # Settings shared by every host: locale, shell, tools and Nix itself.
 {
   flake.nixosModules.base =
-    { lib, pkgs, ... }:
+    { pkgs, ... }:
     {
       time.timeZone = "Europe/Paris";
       console.keyMap = "fr";
@@ -43,10 +43,17 @@
             "flakes"
           ];
           auto-optimise-store = true;
+          # The Pi's binary cache (nix/hosts/piquel-pi/cache.nix), after
+          # cache.nixos.org. While it's unreachable, `fallback` builds what
+          # it would have served instead of failing, and skips it for a
+          # minute; the short timeout keeps each try from stalling a build.
+          extra-substituters = [ "https://piquel-pi.tailfcb6ab.ts.net" ];
+          extra-trusted-public-keys = [ "piquel-pi-1:bKIz75gwV7RfJ6uT1YI+fUYbGk1uptOl9Vlu/jR+r0w=" ];
+          fallback = true;
+          connect-timeout = 5;
         };
         gc = {
-          # The Pi's binary cache collects by free space instead.
-          automatic = lib.mkDefault true;
+          automatic = true;
           dates = "weekly";
           options = "--delete-older-than 10d";
         };

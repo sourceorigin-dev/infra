@@ -2,6 +2,7 @@
 { lib, config, ... }:
 let
   user = config.admin;
+  keys = import ../../secrets/keys.nix;
 in
 {
   options.admin = lib.mkOption {
@@ -18,7 +19,7 @@ in
         extraGroups = [ "wheel" ];
         # The software key goes once the second YubiKey is enrolled (PQD-98).
         openssh.authorizedKeys.keys = [
-          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHVqRluVYJXXoNYyFQzkZm2v2bRnAv/PNuoLRr2G2/Dv piquel@piquel.fr"
+          keys.piquel
           "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIP1SzBK0Kx5/htvjD0egGCCxSDZWzBLI8MKESHlxjuE+AAAACnNzaDpwaXF1ZWw= piquel yubikey 1"
         ];
       };

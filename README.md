@@ -65,7 +65,8 @@ boot:
    ssh-keygen -t ed25519 -N "" -C root@<name> -f ~/<name>-install/etc/ssh/ssh_host_ed25519_key
    ```
 
-2. Add the public key to `secrets/secrets.nix`, then re-encrypt with
+2. Add the public key to `secrets/keys.nix` and the host to `systems` in
+   `secrets/secrets.nix`, then re-encrypt with
    `cd secrets && agenix -r`.
 3. Allow root to log in over SSH with the operator's key on the target.
 4. To keep a machine's tailnet identity and address, copy its
