@@ -1,7 +1,7 @@
 # Settings shared by every host: locale, shell, tools and Nix itself.
 {
   flake.nixosModules.base =
-    { pkgs, ... }:
+    { lib, pkgs, ... }:
     {
       time.timeZone = "Europe/Paris";
       console.keyMap = "fr";
@@ -45,7 +45,8 @@
           auto-optimise-store = true;
         };
         gc = {
-          automatic = true;
+          # The Pi's binary cache collects by free space instead.
+          automatic = lib.mkDefault true;
           dates = "weekly";
           options = "--delete-older-than 10d";
         };

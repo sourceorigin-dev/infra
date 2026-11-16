@@ -13,6 +13,7 @@ let
   # Modules every host imports.
   common = with self.nixosModules; [
     base
+    cache
     admin
     network
     secrets
