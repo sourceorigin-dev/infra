@@ -22,13 +22,15 @@ in
         settings = {
           auth.max_token_days = 365;
           reconciliation.prepare_timeout_seconds = 1200;
-          # nixosbtw builds the images and keeps them in its registry
-          # (PiquelChips/dotfiles' build-machine module). While it's off, a
-          # deployment that needs a build fails with builder_unavailable and
-          # isn't retried: deploy again once it's on.
+          # nixosbtw builds the images (PiquelChips/dotfiles' build-machine
+          # module) and pushes them to the Pi's registry, which is always on.
+          # While nixosbtw is off, a deployment that needs a build fails with
+          # builder_unavailable and isn't retried: deploy again once it's on.
+          # Building here instead (`unavailable = "local"`) waits on a limit
+          # for those builds' resources (PQD-117).
           build = {
             builder = "tcp://nixosbtw.tailfcb6ab.ts.net:1234";
-            repository = "nixosbtw.tailfcb6ab.ts.net:5000/piqueld";
+            repository = "piquel-pi.tailfcb6ab.ts.net:5000/piqueld";
           };
           # Previews run alongside production on a VPS with 8 GB. Each preview
           # service gets 512 MB unless it sets its own limit.
@@ -63,7 +65,7 @@ in
       users.users.${admin}.extraGroups = [ "piqueld" ];
 
       # Containers reach the tailnet as ovh-1 itself, which includes nixosbtw's
-      # build machine: it takes no credentials. Only the host may open
+      # build machine and the Pi's registry: neither takes credentials. Only the host may open
       # connections there; replies to tailnet clients still go out. This also
       # keeps applications from calling private routes or the API at
       # dash.piqueld.dev, which are on the tailnet.
