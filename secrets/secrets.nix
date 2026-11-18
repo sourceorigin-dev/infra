@@ -1,13 +1,7 @@
 let
-  # Piquel's personal public key
-  piquel = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHVqRluVYJXXoNYyFQzkZm2v2bRnAv/PNuoLRr2G2/Dv";
-  users = [ piquel ];
-
-  nixosbtw = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL2JWt8eVq7rh8Iv41c78xhW3MGKn5m7MBNQ/3iLUWM8";
-  piquel-pi = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKtrAhMMQ4WDysvu1zbxrnARtl+B0TwR1ov5MC8Wut0F";
-  ovh-1 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID76ACe5RwD38FnSZFeS7AC36rvLD42LN6fLQ9yUnbTX";
-
-  systems = [
+  keys = import ./keys.nix;
+  users = [ keys.piquel ];
+  systems = with keys; [
     nixosbtw
     piquel-pi
     ovh-1
@@ -16,7 +10,9 @@ in
 {
   "tailscale_auth.age".publicKeys = users ++ systems;
   # `cloudflared tunnel create piqueld` credentials JSON.
-  "piqueld-cloudflared-tunnel.age".publicKeys = users ++ [ ovh-1 ];
+  "piqueld-cloudflared-tunnel.age".publicKeys = users ++ [ keys.ovh-1 ];
   # Cloudflare API token with Zone:Read and DNS:Edit.
-  "piqueld-cloudflare-dns-token.age".publicKeys = users ++ [ ovh-1 ];
+  "piqueld-cloudflare-dns-token.age".publicKeys = users ++ [ keys.ovh-1 ];
+  # Signs the Pi's binary cache: `nix key generate-secret --key-name piquel-pi-1`.
+  "piquel-pi-cache-key.age".publicKeys = users ++ [ keys.piquel-pi ];
 }

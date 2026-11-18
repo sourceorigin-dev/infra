@@ -35,6 +35,22 @@ current platform's hosts.
 SSH is never public. Every host opens it on the tailnet only (`tailscale0`), and
 the Pi also on its LAN, for when the tailnet is down.
 
+## Storage on the Pi
+
+The Pi, which is always on, keeps what other machines build, on the tailnet
+only:
+
+- **Images:** ovh-1's piqueld pulls built images from the registry at
+  `piquel-pi.tailfcb6ab.ts.net:5000`. nixosbtw builds them and pushes them there.
+- **Nix:** a binary cache at `https://piquel-pi.tailfcb6ab.ts.net`, with the key
+  `piquel-pi-1:bKIz75gwV7RfJ6uT1YI+fUYbGk1uptOl9Vlu/jR+r0w=`. nixosbtw pushes
+  every path it builds, and every host here substitutes from it, so each can
+  read anything nixosbtw has built. Another machine can use it by adding both
+  to its `extra-substituters` and `extra-trusted-public-keys`, once the
+  tailnet's access rules let it reach the Pi on port 443.
+
+The Pi builds neither: it would have to emulate x86_64.
+
 ## Installing a host
 
 A new host is installed over SSH with
@@ -50,7 +66,8 @@ boot:
    ssh-keygen -t ed25519 -N "" -C root@<name> -f ~/<name>-install/etc/ssh/ssh_host_ed25519_key
    ```
 
-2. Add the public key to `secrets/secrets.nix`, then re-encrypt with
+2. Add the public key to `secrets/keys.nix` and the host to `systems` in
+   `secrets/secrets.nix`, then re-encrypt with
    `cd secrets && agenix -r`.
 3. Allow root to log in over SSH with the operator's key on the target.
 4. To keep a machine's tailnet identity and address, copy its
