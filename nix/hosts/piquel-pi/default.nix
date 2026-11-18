@@ -17,7 +17,17 @@ in
           raspberry-pi-5.bluetooth
         ];
 
-        boot.loader.raspberry-pi.bootloader = "kernel";
+        boot.loader.raspberry-pi = {
+          bootloader = "kernel";
+          # The firmware partition is mounted at /boot (see
+          # _hardware-configuration.nix), not nixos-raspberrypi's default
+          # /boot/firmware. Writing there put generations in a subdirectory
+          # the firmware never reads, so the Pi kept booting a stale one.
+          firmwarePath = "/boot";
+          # Each generation is a full ~65M copy of kernel, initrd and DTBs on
+          # a 487M partition.
+          configurationLimit = 2;
+        };
         system.nixos.tags =
           let
             cfg = config.boot.loader.raspberry-pi;
