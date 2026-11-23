@@ -23,12 +23,15 @@ in
           auth.max_token_days = 365;
           reconciliation.prepare_timeout_seconds = 1200;
           # nixosbtw builds the images (PiquelChips/dotfiles' build-machine
-          # module) and pushes them to the Pi's registry, which is always on.
+          # module), up to 5 at once, and pushes them to the Pi's registry,
+          # which is always on. Builds waiting for a slot count against
+          # prepare_timeout_seconds.
           # While nixosbtw is off, a deployment that needs a build fails with
           # builder_unavailable and isn't retried: deploy again once it's on.
           # Building here instead (`unavailable = "local"`) waits on a limit
           # for those builds' resources (PQD-117).
           build = {
+            parallel = 5;
             builder = "tcp://nixosbtw.tailfcb6ab.ts.net:1234";
             repository = "piquel-pi.tailfcb6ab.ts.net:5000/piqueld";
           };
