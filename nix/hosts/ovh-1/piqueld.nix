@@ -19,6 +19,13 @@ in
 
       services.piqueld = {
         enable = true;
+        # An older piqueld refuses a database a newer one has migrated. After
+        # switching to an older piqueld that also sets this (a deploy-rs
+        # rollback, `nixos-rebuild switch --rollback`, or a downgrade), piqueld
+        # restores the newest pre-migration backup it can open before it
+        # starts. That undoes every change made since the upgrade; the
+        # replaced state stays in /var/lib/piqueld/rolled-back-<time>.
+        rollBack = true;
         settings = {
           auth.max_token_days = 365;
           reconciliation.prepare_timeout_seconds = 1200;
