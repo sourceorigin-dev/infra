@@ -19,6 +19,12 @@ in
 
       services.piqueld = {
         enable = true;
+        # piqueld backs up its state before migrating its database, which an
+        # older piqueld then refuses. After a rollback to a generation that
+        # sets this, such as deploy-rs's, piqueld restores that backup before
+        # it starts, instead of failing. That undoes every change made since
+        # the upgrade; the replaced state stays in /var/lib/piqueld/rolled-back-<time>.
+        rollBack = true;
         settings = {
           auth.max_token_days = 365;
           reconciliation.prepare_timeout_seconds = 1200;
